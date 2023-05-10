@@ -1,5 +1,5 @@
 export const runtime = 'nodejs';
-export const dynamica = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
 
