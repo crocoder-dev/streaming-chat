@@ -161,10 +161,10 @@ const Chat = () => {
 
   useEffect(() => {
     const eventSource = new EventSource("/api/chat");
-    eventSource.onmessage = (event) => {
+    eventSource.addEventListener("chat.message", (event) => {
       const message = JSON.parse(event.data) as Message;
       setMessages((messages) => [...messages, message]);
-    };
+    });
     setUsername(localStorage.getItem("username") || "");
     setUserId(localStorage.getItem("userId") || null);
     setLoading(false);
