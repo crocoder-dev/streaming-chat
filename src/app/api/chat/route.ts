@@ -11,7 +11,17 @@ export async function GET() {
 
   client.subscribe('streaming-chat');
   client.on('message', (channel, message) => {
-    writer.write(encoder.encode(`data: ${message}\n\n`));
+    console.log('Received message %s from channel %s', message, channel);
+    const { content, username, id, userId } = JSON.parse(message);
+    const messageLines = [
+      `id: ${id}`,
+      `event: chat.message`,
+      `retry: 10000`,
+      `data: ${message}`,
+      '\n',
+    ];
+
+    writer.write(encoder.encode(messageLines.join('\n')));
   });
 
   return new Response(responseStream.readable, {
