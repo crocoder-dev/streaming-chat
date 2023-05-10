@@ -19,21 +19,28 @@ const StartingScreen: FC<StartingScreenProps> = ({ confirmUsername }) => {
   const [username, setUsername] = useState<string>("");
 
   return (
-    <form>
-      <label htmlFor="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)} />
-      <button
-        onClick={(e) => {
-          confirmUsername(username)
-          e.preventDefault();
-        }}
-        type="submit">Start Chatting
-      </button>
-    </form>
+    <div className="w-80 h-52">
+      <form className="flex justify-center items-center gap-4 flex-col p-6 bg-gray-200 w-full h-full rounded-xl shadow-2xl">
+        <input
+          className="py-2 px-4 focus:outline-none text-black rounded-md"
+          type="text"
+          id="username"
+          placeholder="Enter your username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <button
+          className="p-2 rounded-lg transition-all bg-cyan-600 hover:bg-cyan-500 px-4 py-2 text-slate-50 font-bold"
+          onClick={(e) => {
+            confirmUsername(username);
+            e.preventDefault();
+          }}
+          type="submit"
+        >
+          Start Chatting
+        </button>
+      </form>
+    </div>
   );
 };
 
@@ -46,47 +53,62 @@ type ChatScreenProps = {
 const MyMessageDisplay = ({ content }: { content: string }) => {
   return (
     <div className="flex justify-end">
-      <div className="text-white bg-blue-800 min-w-[33%] m-w-[66%] mx-4 my-2 p-2 rounded-lg break-normal">
+      <div className="text-white w-fit bg-emerald-500 min-w-[33%] py-3 px-4 rounded-2xl max-w-[70%] rounded-tr-none break-words">
         {content}
       </div>
     </div>
   );
 };
 
-const MessageDisplay = ({ content, username }: { content: string, username: string }) => {
+const MessageDisplay = ({
+  content,
+  username,
+}: {
+  content: string;
+  username: string;
+}) => {
   return (
-    <div className="flex">
-      <div className="text-white bg-gray-900 min-w-[33%] max-w-[66%] mx-4 my-2 p-2 rounded-lg break-words">
-        <strong>{username}</strong>: {content}
+    <div className="flex flex-col">
+      <strong className="text-cyan-600">{username}:</strong>
+      <div className="text-white w-fit bg-cyan-500 font-medium min-w-[33%] py-3 px-4 max-w-[70%] rounded-2xl rounded-tl-none break-words">
+        {content}
       </div>
     </div>
   );
 };
 
-
-
 const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
-
   const [newMessage, setNewMessage] = useState<string>("");
   return (
-    <>
-      <div className="h-5/6 overflow-y-auto no-scroll">
+    <div className="flex justify-center items-center gap-4 p-3 flex-col max-w-[1100px] bg-gray-200 w-11/12 h-5/6 rounded-md sm:w-4/5 sm:h-4/5 shadow-2xl">
+      <div className="flex flex-col gap-3 flex-1 p-3 overflow-y-auto no-scroll w-full">
         {messages.map((message) => {
           if (message.userId === userId) {
-            return <MyMessageDisplay key={message.id} content={message.content} />
+            return (
+              <MyMessageDisplay key={message.id} content={message.content} />
+            );
           }
-          return <MessageDisplay key={message.id} content={message.content} username={message.username} />
+          return (
+            <MessageDisplay
+              key={message.id}
+              content={message.content}
+              username={message.username}
+            />
+          );
         })}
         <div style={{ overflowAnchor: "auto", height: "1px" }}></div>
       </div>
-      <form>
-        <label htmlFor="newMessage">New Message</label>
+      <form className="flex w-full p-3 bg-gray-300 rounded-b-md">
         <input
+          className="flex-1 focus:outline-none py-2 px-4 text-black rounded-md rounded-r-none"
           type="text"
           id="newMessage"
+          placeholder="New message"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)} />
+          onChange={(e) => setNewMessage(e.target.value)}
+        />
         <button
+          className="cursor-pointer rounded-l-none p-2 rounded-lg transition-all bg-cyan-600 hover:bg-cyan-500 px-4 py-2 text-slate-50 font-bold"
           disabled={!newMessage}
           onClick={(e) => {
             e.preventDefault();
@@ -104,11 +126,12 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
             });
             setNewMessage("");
           }}
-          type="submit">
+          type="submit"
+        >
           Send
         </button>
       </form>
-    </>
+    </div>
   );
 };
 
@@ -137,22 +160,22 @@ const Chat = () => {
     setLoading(false);
     return () => {
       eventSource.close();
-    }
+    };
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div className="flex justify-center items-center text-xl text-white font-bold bg-cyan-700 w-screen h-screen">Loading...</div>;
   }
 
   return (
-    <div className="max-w-[512px] h-screen">
-      {
-        !userId
-          ? <StartingScreen confirmUsername={confirmUsername} />
-          : <ChatScreen userId={userId} username={username} messages={messages} />
-      }
+    <div className="w-screen h-screen flex justify-center items-center bg-cyan-700">
+      {!userId ? (
+        <StartingScreen confirmUsername={confirmUsername} />
+      ) : (
+        <ChatScreen userId={userId} username={username} messages={messages} />
+      )}
     </div>
-  )
+  );
 };
 
 export default Chat;
