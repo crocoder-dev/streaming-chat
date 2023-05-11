@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { nanoid } from "nanoid";
 import "./chat.css";
 
@@ -79,6 +79,16 @@ const MessageDisplay = ({
 
 const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
   const [newMessage, setNewMessage] = useState<string>("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
     <div className="flex justify-center items-center gap-4 flex-col max-w-[1100px] bg-gray-200 dark:bg-slate-700 w-full h-full sm:rounded-md sm:w-4/5 sm:h-4/5 shadow-2xl">
       <div className="flex flex-col gap-3 flex-1 p-3 overflow-y-auto no-scroll w-full">
@@ -96,6 +106,7 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
             />
           );
         })}
+        <div ref={messagesEndRef} />
         <div style={{ overflowAnchor: "auto", height: "1px" }}></div>
       </div>
       <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md dark:bg-slate-600">
