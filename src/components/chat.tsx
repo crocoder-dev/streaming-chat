@@ -69,7 +69,7 @@ const MessageDisplay = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <strong className="text-cyan-600">{username}:</strong>
+      <strong className="text-cyan-600 break-words">{username}:</strong>
       <div className="text-white w-fit bg-cyan-500 font-medium min-w-[33%] py-3 px-4 max-w-[70%] rounded-2xl rounded-tl-none break-words">
         {content}
       </div>
