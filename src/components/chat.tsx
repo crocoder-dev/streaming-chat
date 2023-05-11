@@ -106,8 +106,7 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
             />
           );
         })}
-        <div ref={messagesEndRef} />
-        <div style={{ overflowAnchor: "auto", height: "1px" }}></div>
+        <div ref={messagesEndRef} style={{ overflowAnchor: "auto", height: "1px" }}></div>
       </div>
       <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md dark:bg-slate-600">
         <input
