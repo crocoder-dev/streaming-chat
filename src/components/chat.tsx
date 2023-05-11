@@ -80,7 +80,7 @@ const MessageDisplay = ({
 const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
   const [newMessage, setNewMessage] = useState<string>("");
   return (
-    <div className="flex justify-center items-center gap-4 p-3 flex-col max-w-[1100px] bg-gray-200 w-11/12 h-5/6 rounded-md sm:w-4/5 sm:h-4/5 shadow-2xl">
+    <div className="flex justify-center items-center gap-4 flex-col max-w-[1100px] bg-gray-200 dark:bg-slate-700 w-full h-full sm:rounded-md sm:w-4/5 sm:h-4/5 shadow-2xl">
       <div className="flex flex-col gap-3 flex-1 p-3 overflow-y-auto no-scroll w-full">
         {messages.map((message) => {
           if (message.userId === userId) {
@@ -98,9 +98,9 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
         })}
         <div style={{ overflowAnchor: "auto", height: "1px" }}></div>
       </div>
-      <form className="flex w-full p-3 bg-gray-300 rounded-b-md">
+      <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md dark:bg-slate-600">
         <input
-          className="flex-1 focus:outline-none py-2 px-4 text-black rounded-md rounded-r-none"
+          className="flex-1 focus:outline-none min-w-[150px] py-2 px-4 text-black rounded-md rounded-r-none"
           type="text"
           id="newMessage"
           placeholder="New message"
@@ -164,11 +164,11 @@ const Chat = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center text-xl text-white font-bold bg-cyan-700 w-screen h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center text-xl text-white font-bold bg-cyan-700 dark:bg-slate-900 w-screen h-screen">Loading...</div>;
   }
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-cyan-700">
+    <div className="w-screen h-screen flex justify-center items-center bg-cyan-700 dark:bg-slate-900">
       {!userId ? (
         <StartingScreen confirmUsername={confirmUsername} />
       ) : (
