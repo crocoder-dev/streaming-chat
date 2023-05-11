@@ -20,7 +20,7 @@ const StartingScreen: FC<StartingScreenProps> = ({ confirmUsername }) => {
 
   return (
     <div className="w-80 h-52">
-      <form className="flex justify-center items-center gap-4 flex-col p-6 bg-gray-200 w-full h-full rounded-xl shadow-2xl">
+      <form className="flex justify-center items-center gap-4 flex-col p-6 bg-gray-200 dark:bg-slate-700 w-full h-full rounded-xl shadow-2xl">
         <input
           className="py-2 px-4 focus:outline-none text-black rounded-md"
           type="text"
