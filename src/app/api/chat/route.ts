@@ -34,9 +34,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { content, username, id, userId } = await request.json();
+  const { content, username, id, userId, date } = await request.json();
   const client = new Redis(process.env.REDIS_URL!);
-  await client.publish('streaming-chat', JSON.stringify({ content, username, id, userId }));
+  await client.publish('streaming-chat', JSON.stringify({ content, username, id, userId, date }));
   client.quit();
   return new Response('OK');
 }
