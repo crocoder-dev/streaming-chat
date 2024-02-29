@@ -67,28 +67,39 @@ const MyMessageDisplay = ({
   const { date, content, id } = message;
 
   const newDate = new Date(date);
-  const hours = newDate.getHours() > 9 ? newDate.getHours() : "0" + newDate.getHours();
-  const minutes =newDate.getMinutes() > 9 ? newDate.getMinutes() : "0" + newDate.getMinutes();
+  const hours =
+    newDate.getHours() > 9 ? newDate.getHours() : "0" + newDate.getHours();
+  const minutes =
+    newDate.getMinutes() > 9
+      ? newDate.getMinutes()
+      : "0" + newDate.getMinutes();
 
   return (
-    <div className="flex flex-col items-end">
-      <div className="text-white w-fit bg-emerald-500 min-w-[33%] py-3 px-4 rounded-2xl max-w-[70%] rounded-tr-none break-words">
-        <div>{content}</div>
-        <div className="flex justify-end text-sm">{hours + ":" + minutes}</div>
-      </div>
-      {notFetchedMessages.includes(id) ? (
-        <span className="text-red-500 p-1">
-          Message not sent❗
-          <span
-            className="underline text-blue-400 hover:text-blue-300 cursor-pointer"
-            onClick={() =>
-              sendMessage(message, notFetchedMessages, setNotFetchedMessages)
-            }
-          >
-            resend
+    <div className="flex w-full mt-2 space-x-3 max-w-[70%] ml-auto justify-end">
+      <div className="flex flex-col gap-1">
+        <div className="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
+          {content}
+        </div>
+        <div className="text-xs text-gray-500 leading-none">
+          {hours + ":" + minutes}
+        </div>
+        {notFetchedMessages.includes(id) ? (
+          <span className="text-red-500 p-1">
+            Message not sent❗
+            <span
+              className="underline text-blue-400 hover:text-blue-300 cursor-pointer"
+              onClick={() =>
+                sendMessage(message, notFetchedMessages, setNotFetchedMessages)
+              }
+            >
+              resend
+            </span>
           </span>
-        </span>
-      ) : null}
+        ) : null}
+      </div>
+      <div className="flex justify-center items-center flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
+        <strong>ME</strong>
+      </div>
     </div>
   );
 };
@@ -106,11 +117,18 @@ const MessageDisplay = ({
   const minutes =
     date.getMinutes() > 9 ? date.getMinutes() : "0" + date.getMinutes();
   return (
-    <div className="flex flex-col">
-      <strong className="text-cyan-600 break-words">{username}:</strong>
-      <div className="text-white w-fit bg-cyan-500 font-medium min-w-[33%] py-3 px-4 max-w-[70%] rounded-2xl rounded-tl-none break-words">
-        <div>{content}</div>
-        <div className="flex justify-end text-sm">{hours + ":" + minutes}</div>
+    <div className="flex w-full mt-2 space-x-3 max-w-[70%]">
+      <div className="flex justify-center items-center flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
+        <strong>{username.slice(-2).toUpperCase()}</strong>
+      </div>
+      <div className="flex flex-col gap-1">
+        {/* <strong className="text-cyan-600 break-words">{username}:</strong> */}
+        <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
+          {content}
+        </div>
+        <div className="text-xs text-gray-500 leading-none">
+          {hours + ":" + minutes}
+        </div>
       </div>
     </div>
   );
@@ -131,7 +149,7 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
   }, [messages]);
 
   return (
-    <div className="flex justify-center items-center gap-4 flex-col max-w-[1100px] bg-gray-200 dark:bg-slate-700 w-full h-full sm:rounded-md sm:w-4/5 sm:h-4/5 shadow-2xl">
+    <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden h-full sm:rounded-md sm:w-4/5 sm:h-4/5">
       <div className="flex flex-col gap-3 flex-1 p-3 overflow-y-auto no-scroll w-full">
         {messages.map((message) => {
           if (message.userId === userId) {
@@ -158,7 +176,7 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
           style={{ overflowAnchor: "auto", height: "1px" }}
         ></div>
       </div>
-      <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md dark:bg-slate-600">
+      <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md ">
         <input
           className="flex-1 focus:outline-none min-w-[150px] py-2 px-4 text-black rounded-md rounded-r-none"
           type="text"
@@ -167,8 +185,8 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <button
-          className="cursor-pointer rounded-l-none p-2 rounded-lg transition-all bg-cyan-600 hover:bg-cyan-500 px-4 py-2 text-slate-50 font-bold"
+        <input
+          className="cursor-pointer rounded-l-none p-2 rounded-lg transition-all bg-blue-600 hover:bg-blue-500 px-4 py-2 text-slate-50 font-bold"
           disabled={!newMessage}
           onClick={(e) => {
             e.preventDefault();
@@ -188,10 +206,9 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
 
             setNewMessage("");
           }}
+          value={"Send"}
           type="submit"
-        >
-          Send
-        </button>
+        />
       </form>
     </div>
   );
@@ -202,9 +219,9 @@ const StartingScreen: FC<StartingScreenProps> = ({ confirmUsername }) => {
 
   return (
     <div className="w-80 h-52">
-      <form className="flex justify-center items-center gap-4 flex-col p-6 bg-gray-200 dark:bg-slate-700 w-full h-full rounded-xl shadow-2xl">
+      <form className="flex justify-center items-center gap-4 flex-col p-6 bg-white w-full h-full rounded-xl shadow-2xl">
         <input
-          className="py-2 px-4 focus:outline-none text-black rounded-md"
+          className="py-2 px-4 focus:outline-none bg-slate-200 text-black rounded-md"
           type="text"
           id="username"
           placeholder="Enter your username"
@@ -212,7 +229,7 @@ const StartingScreen: FC<StartingScreenProps> = ({ confirmUsername }) => {
           onChange={(e) => setUsername(e.target.value)}
         />
         <button
-          className="p-2 rounded-lg transition-all bg-cyan-600 hover:bg-cyan-500 px-4 py-2 text-slate-50 font-bold"
+          className="p-2 rounded-lg transition-all bg-blue-600 hover:bg-blue-500 px-4 py-2 text-slate-50 font-bold"
           onClick={(e) => {
             confirmUsername(username);
             e.preventDefault();
@@ -262,14 +279,14 @@ const Chat = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center text-xl text-white font-bold bg-cyan-700 dark:bg-slate-900 w-screen h-screen">
+      <div className="flex justify-center items-center text-xl font-bold bg-gray-100 text-gray-800 p-10 w-screen h-screen">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-cyan-700 dark:bg-slate-900">
+    <div className="w-screen h-screen flex justify-center items-center bg-gray-100 text-gray-800 p-10">
       {!userId ? (
         <StartingScreen confirmUsername={confirmUsername} />
       ) : (
