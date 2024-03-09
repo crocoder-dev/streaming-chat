@@ -9,7 +9,10 @@ import {
   useState,
 } from "react";
 import { nanoid } from "nanoid";
+import Picker, { EmojiClickData } from "emoji-picker-react";
 import "./chat.css";
+import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
+import { FaceSmileIcon } from "@heroicons/react/20/solid";
 
 type StartingScreenProps = {
   confirmUsername: (username: string) => void;
@@ -34,6 +37,7 @@ const sendMessage = (
   notFetchedMessages: string[],
   setNotFetchedMessages: Dispatch<SetStateAction<string[]>>
 ) => {
+  console.log("abort");
   try {
     fetch("/api/chat", {
       method: "POST",
@@ -136,12 +140,27 @@ const MessageDisplay = ({
 
 const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
   const [newMessage, setNewMessage] = useState<string>("");
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [notFetchedMessages, setNotFetchedMessages] = useState<string[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const onEmojiClick: MouseDownEvent = (event: EmojiClickData) => {
+    const textAreaElement = document.getElementById(
+      "message"
+    ) as HTMLTextAreaElement;
+    const selectionStart = textAreaElement.selectionStart;
+    const selectionEnd = textAreaElement.selectionEnd;
+
+    setNewMessage(
+      newMessage.substring(0, selectionStart) +
+        event.emoji +
+        newMessage.substring(selectionEnd)
+    );
   };
 
   useEffect(() => {
@@ -176,40 +195,77 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
           style={{ overflowAnchor: "auto", height: "1px" }}
         ></div>
       </div>
-      <form className="flex w-full p-3 bg-gray-300 sm:rounded-b-md ">
-        <input
-          className="flex-1 focus:outline-none min-w-[150px] py-2 px-4 text-black rounded-md rounded-r-none"
-          type="text"
-          id="newMessage"
-          placeholder="New message"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <input
-          className="cursor-pointer rounded-l-none p-2 rounded-lg transition-all bg-blue-600 hover:bg-blue-500 px-4 py-2 text-slate-50 font-bold"
-          disabled={!newMessage}
-          onClick={(e) => {
-            e.preventDefault();
-            const messageId = nanoid();
+      <div className="flex items-start space-x-4">
+        <div className="min-w-0 flex-1">
+          <form action="#" className="relative">
+            <div className="overflow-hidden rounded-lg shadow-sm focus:ring-0 border-1 ring-1 ring-slate-300 m-1">
+              <label htmlFor="comment" className="sr-only">
+                Add your comment
+              </label>
+              <textarea
+                rows={3}
+                name="message"
+                id="message"
+                className="block w-full resize-none bg-transparent text-gray-900 p-1 placeholder:text-gray-400 focus:outline-none sm:text-sm sm:leading-6"
+                placeholder="Your message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+              />
+            </div>
+            <div className="bottom-0 flex justify-between py-2 pl-3 pr-2">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('render')
+                  setEmojiPickerOpen(!emojiPickerOpen);
+                }}
+              >
+                <FaceSmileIcon
+                  className="h-7 w-7 flex-shrink-0 text-gray-400"
+                  aria-hidden="true"
+                />
+              </button>
+              <input
+                type="submit"
+                value="Post"
+                className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                disabled={!newMessage}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const messageId = nanoid();
 
-            const message = {
-              id: messageId,
-              username,
-              userId,
-              content: newMessage,
-              date: new Date(),
-            };
+                  const message = {
+                    id: messageId,
+                    username,
+                    userId,
+                    content: newMessage,
+                    date: new Date(),
+                  };
 
-            messages.push(message);
+                  messages.push(message);
 
-            sendMessage(message, notFetchedMessages, setNotFetchedMessages);
+                  sendMessage(
+                    message,
+                    notFetchedMessages,
+                    setNotFetchedMessages
+                  );
 
-            setNewMessage("");
-          }}
-          value={"Send"}
-          type="submit"
-        />
-      </form>
+                  setNewMessage("");
+                }}
+              />
+            </div>
+            <Picker
+              onEmojiClick={onEmojiClick}
+              open={emojiPickerOpen}
+              skinTonesDisabled={true}
+              previewConfig={{showPreview: false}}
+              lazyLoadEmojis={false}
+              width={"100%"}
+              height={300}
+            />
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,13 +1,19 @@
 import { Redis } from 'ioredis';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const responseStream = new TransformStream();
   const writer = responseStream.writable.getWriter();
   const encoder = new TextEncoder();
   const client = new Redis(process.env.REDIS_URL!);
+
+  req.signal.onabort = () => {
+    console.log("abort");
+    writer.close();
+  };
 
   client.subscribe('streaming-chat');
   client.on('message', (channel, message) => {
