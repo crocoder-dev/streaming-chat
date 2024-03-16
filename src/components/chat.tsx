@@ -3,6 +3,7 @@
 import {
   Dispatch,
   FC,
+  FormEvent,
   SetStateAction,
   useEffect,
   useRef,
@@ -37,7 +38,6 @@ const sendMessage = (
   notFetchedMessages: string[],
   setNotFetchedMessages: Dispatch<SetStateAction<string[]>>
 ) => {
-  console.log("abort");
   try {
     fetch("/api/chat", {
       method: "POST",
@@ -150,18 +150,31 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
   };
 
   const onEmojiClick: MouseDownEvent = (event: EmojiClickData) => {
-    const textAreaElement = document.getElementById(
-      "message"
-    ) as HTMLTextAreaElement;
-    const selectionStart = textAreaElement.selectionStart;
-    const selectionEnd = textAreaElement.selectionEnd;
-
-    setNewMessage(
-      newMessage.substring(0, selectionStart) +
-        event.emoji +
-        newMessage.substring(selectionEnd)
-    );
+    setNewMessage((val) => val + event.emoji);
   };
+
+  const onMessageSend = (e: FormEvent) => {
+    e.preventDefault();
+    const messageId = nanoid();
+
+    const message = {
+      id: messageId,
+      username,
+      userId,
+      content: newMessage,
+      date: new Date(),
+    };
+
+    messages.push(message);
+
+    sendMessage(
+      message,
+      notFetchedMessages,
+      setNotFetchedMessages
+    );
+
+    setNewMessage("");
+  }
 
   useEffect(() => {
     scrollToBottom();
@@ -216,8 +229,8 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log('render')
-                  setEmojiPickerOpen(!emojiPickerOpen);
+                  console.log("render");
+                  setEmojiPickerOpen((prev) => !prev);
                 }}
               >
                 <FaceSmileIcon
@@ -230,39 +243,19 @@ const ChatScreen: FC<ChatScreenProps> = ({ userId, username, messages }) => {
                 value="Post"
                 className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 disabled={!newMessage}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const messageId = nanoid();
-
-                  const message = {
-                    id: messageId,
-                    username,
-                    userId,
-                    content: newMessage,
-                    date: new Date(),
-                  };
-
-                  messages.push(message);
-
-                  sendMessage(
-                    message,
-                    notFetchedMessages,
-                    setNotFetchedMessages
-                  );
-
-                  setNewMessage("");
-                }}
+                onClick={(e) => onMessageSend(e)}
               />
             </div>
-            <Picker
-              onEmojiClick={onEmojiClick}
-              open={emojiPickerOpen}
-              skinTonesDisabled={true}
-              previewConfig={{showPreview: false}}
-              lazyLoadEmojis={false}
-              width={"100%"}
-              height={300}
-            />
+            <div className={emojiPickerOpen ? "" : "hidden"}>
+              <Picker
+                onEmojiClick={onEmojiClick}
+                skinTonesDisabled={true}
+                previewConfig={{ showPreview: false }}
+                lazyLoadEmojis={true}
+                width={"100%"}
+                height={300}
+              />
+            </div>
           </form>
         </div>
       </div>
